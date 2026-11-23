@@ -1,1 +1,1 @@
-V46 targeted repair. Based on original V45. Only adds external script immediately before final closing body tag. TEST HUB ONLY. Do not upload real client data yet.
+V46 visible control diagnostic. Test Hub only. No data upload/restore. The cloud launcher is placed top-right, independent of Firebase. Based on original V45.
