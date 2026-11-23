@@ -1,0 +1,1 @@
+V46 CLEAN TEST: Deploy only to test-hub. This build tests layout and Google sign-in. All upload/restore/auto-sync controls are disabled. Do not deploy to production. Original V45 HTML preserved except for one external script tag and home-page version marker.
