@@ -319,7 +319,38 @@ const AI_CLASSES_STORAGE='fpm_v44_saved_classes';
 function aiClassToggle(){const el=$('aiClassControls');if(el)el.style.display=aiValue('aiMode')==='class'?'block':'none';const isClass=aiValue('aiMode')==='class';const btn=$('aiSaveClient');if(btn)btn.style.display=isClass?'none':'';for(const id of ['aiSaveClass','aiPrintClass']){const b=$(id);if(b)b.style.display=isClass?'':'none';}}
 function aiClassStore(){try{return JSON.parse(localStorage.getItem(AI_CLASSES_STORAGE)||'[]')}catch(e){return []}}
 function aiSaveClass(){if(!aiResult)return alert('Generate a class first.');const title=prompt('Save class as:',aiValue('aiClassName')||aiResult.title||'New class');if(!title)return;const all=aiClassStore();all.unshift({id:Date.now().toString(36),title,created:new Date().toISOString(),plan:aiResult,settings:aiSettings()});localStorage.setItem(AI_CLASSES_STORAGE,JSON.stringify(all.slice(0,100)));$('aiStatus').textContent='Class saved on this device. Use Export class backup to keep a copy.';aiRenderResult(aiResult)}
-function aiPrintClass(){if(!aiResult)return;const plan=aiResult;const escapePrint=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const html=`<!doctype html><html><head><meta charset="utf-8"><title>${escapePrint(plan.title)}</title><style>body{font:12pt Arial;margin:25px;color:#172d42}h1{color:#087f87}section{break-inside:avoid;margin:18px 0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #aaa;padding:7px;text-align:left}th{background:#e9f3f5}@media print{button{display:none}}</style></head><body><h1>${escapePrint(plan.title)}</h1><p>${escapePrint(plan.summary)}</p>${(plan.days||[]).map(d=>`<section><h2>${escapePrint(d.name)} — ${escapePrint(d.focus)}</h2><table><tr><th>Exercise / station</th><th>Sets</th><th>Duration / reps</th><th>Rest</th><th>Coaching notes</th></tr>${(d.exercises||[]).map(e=>`<tr><td>${escapePrint(e.name)}</td><td>${escapePrint(e.sets)}</td><td>${escapePrint(e.reps)}</td><td>${escapePrint(e.restSeconds)}s</td><td>${escapePrint(e.notes)}</td></tr>`).join('')}</table></section>`).join('')}</body></html>`;const w=window.open('','_blank');if(!w)return alert('Allow pop-ups to print this class.');w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),350)}
+function aiPrintClass(){if(!aiResult)return;const plan=aiResult;const escapePrint=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const html=`<!doctype html><html><head><meta charset="utf-8"><title>${escapePrint(plan.title)}</title><style>body{font:12pt Arial;margin:25px;color:#172d42}h1{color:#087f87}section{break-inside:avoid;margin:18px 0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #aaa;padding:7px;text-align:left}th{background:#e9f3f5}@media print{button{display:none}}</style></head><body><h1>${escapePrint(plan.title)}</h1><p>${escapePrint(plan.summary)}</p>${(plan.days||[]).map(d=>`<section><h2>${escapePrint(d.name)} — ${escapePrint(d.focus)}</h2><table><tr><th>Exercise / station</th><th>Sets</th><th>Duration / reps</th><th>Rest</th><th>Coaching notes</th></tr>${(d.exercises||[]).map(e=>`<tr><td>${escapePrint(e.name)}</td><td>${escapePrint(e.sets)}</td><td>${escapePrint(e.reps)}</td><td>${escapePrint(e.restSeconds)}s</td><td>${escapePrint(e.notes)}</td></tr>`).join('')}</table></section>`).join('')}<script>
+(function(){
+  function init(){
+    if(document.getElementById('fm-v46-rescue'))return;
+    var host=document.createElement('div');host.id='fm-v46-rescue';
+    host.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483640;font:14px system-ui,Arial,sans-serif;color:#132c40';
+    host.innerHTML='<button id="fm-rescue-toggle" style="background:#075a77;color:white;border:2px solid white;border-radius:12px;padding:12px;box-shadow:0 3px 14px #0005">☁ Cloud Transfer</button><div id="fm-rescue-panel" style="display:none;background:white;color:#132c40;border:1px solid #9ab3c4;border-radius:12px;padding:16px;width:min(370px,calc(100vw - 28px));max-height:70vh;overflow:auto;box-shadow:0 6px 24px #0005"><strong>V46 Cloud Transfer — connection check</strong><p id="fm-rescue-status">Checking transfer script...</p><p>Uploads and restores are disabled until the connection is verified.</p><button id="fm-rescue-retry" style="padding:9px">Retry loading script</button> <button id="fm-rescue-close" style="padding:9px">Close</button></div>';
+    document.body.appendChild(host);
+    var panel=document.getElementById('fm-rescue-panel'),status=document.getElementById('fm-rescue-status');
+    document.getElementById('fm-rescue-toggle').onclick=function(){panel.style.display=panel.style.display==='none'?'block':'none'};
+    document.getElementById('fm-rescue-close').onclick=function(){panel.style.display='none'};
+    function check(){
+      if(document.getElementById('fm-cloud-v46')){status.textContent='Transfer panel created. Use its controls only after reviewing the data preview.';host.style.display='none';return true}return false;
+    }
+    function load(){
+      if(check())return;
+      status.textContent='Loading cloud transfer script...';
+      var old=document.getElementById('fm-rescue-script');if(old)old.remove();
+      var s=document.createElement('script');s.id='fm-rescue-script';s.src='./cloud-sync-v46.js?v=panelrepair3';
+      s.onload=function(){if(!check())status.textContent='Script downloaded, but transfer panel did not appear. A runtime error may be preventing startup.'};
+      s.onerror=function(){status.textContent='Cloud script could not be downloaded. Check cloud-sync-v46.js is beside index.html.'};
+      document.body.appendChild(s);
+    }
+    document.getElementById('fm-rescue-retry').onclick=load;
+    window.addEventListener('error',function(e){if(!check())status.textContent='JavaScript error: '+String(e.message||'unknown').slice(0,220)});
+    window.addEventListener('unhandledrejection',function(e){if(!check())status.textContent='Startup error: '+String(e.reason?.message||e.reason||'unknown').slice(0,220)});
+    load();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body></html>`;const w=window.open('','_blank');if(!w)return alert('Allow pop-ups to print this class.');w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),350)}
 function aiSavedClassUI(){return `<details><summary><b>Saved AI classes (${aiClassStore().length})</b></summary><div class="actions"><button data-ai="exportclasses">Export class backup</button></div>${aiClassStore().map(c=>`<div class="row"><span>${esc(c.title)} — ${esc(c.created.slice(0,10))}</span><button data-ai="loadclass" data-class-id="${esc(c.id)}">Open</button><button data-ai="deleteclass" data-class-id="${esc(c.id)}">Delete</button></div>`).join('')||'<p>No saved classes yet.</p>'}</details>`}
 
 function aiRenderResult(result){aiResult=result;try{sessionStorage.setItem(AI_DRAFT_SESSION,JSON.stringify(result));}catch(e){}const days=Array.isArray(result.days)?result.days:[];$('aiOutput').innerHTML=`<h3>${esc(result.title||'Generated plan')}</h3><p>${esc(result.summary||'')}</p>${days.map((d,i)=>`<details ${i===0?'open':''}><summary><b>${esc(d.name||'Session '+(i+1))}</b> — ${esc(d.focus||'')}</summary><div class="tablewrap"><table><thead><tr><th>Exercise</th><th>Sets</th><th>Reps / duration</th><th>Rest</th><th>Notes</th></tr></thead><tbody>${(d.exercises||[]).map(e=>`<tr><td>${esc(e.name)}</td><td>${esc(e.sets)}</td><td>${esc(e.reps)}</td><td>${esc(e.restSeconds)} sec</td><td>${esc(e.notes)}</td></tr>`).join('')}</tbody></table></div></details>`).join('')}<div class="actions"><button id="aiSaveClient" data-ai="save">Save as editable client draft</button><button id="aiSaveClass" data-ai="saveclass">Save class</button><button id="aiPrintClass" data-ai="printclass">Print class plan</button><button data-ai="copy">Copy plan text</button></div><p class="tiny muted">Saving a draft never overwrites an approved programme or publishes it to a client.</p>`;aiClassToggle();}
@@ -1186,7 +1217,38 @@ async function coachAction(btn){
  if(a==='feedbacktemplate'){coachDownloadFeedbackForm();return}
  if(a==='importfeedback'){const file=$('coachFeedbackFile')?.files?.[0];if(!file)return alert('Select a feedback JSON file');let d;try{d=JSON.parse(await file.text())}catch{return alert('Invalid JSON file')};if(d.type!=='fitness-coaching-feedback-v1'||typeof d.text!=='string')return alert('This is not a supported workout feedback file');x.feedback.push({id:uid(),clientId:c.id,date:d.date||today(),text:d.text});await save();render();return}
  if(a==='preview'){$('coachPreviewFile')?.click();return}
- if(a==='print'){const review=x.reviews.filter(r=>r.clientId===c.id).slice(-1)[0];if(!review)return alert('Save a review first');const w=window.open('','_blank');if(!w)return alert('Allow popups to print the review');w.document.write(`<html><title>Client review</title><body style="font:16px system-ui;max-width:700px;margin:40px auto"><h1>Client review: ${esc(c.name)}</h1><p>Date: ${esc(coachDate(review.date))}</p><h2>Progress</h2><p style="white-space:pre-wrap">${esc(review.progress)}</p><h2>Next actions</h2><p style="white-space:pre-wrap">${esc(review.actions)}</p><script>window.print()<\/script></body></html>`);w.document.close();return}
+ if(a==='print'){const review=x.reviews.filter(r=>r.clientId===c.id).slice(-1)[0];if(!review)return alert('Save a review first');const w=window.open('','_blank');if(!w)return alert('Allow popups to print the review');w.document.write(`<html><title>Client review</title><body style="font:16px system-ui;max-width:700px;margin:40px auto"><h1>Client review: ${esc(c.name)}</h1><p>Date: ${esc(coachDate(review.date))}</p><h2>Progress</h2><p style="white-space:pre-wrap">${esc(review.progress)}</p><h2>Next actions</h2><p style="white-space:pre-wrap">${esc(review.actions)}</p><script>window.print()<\/script><script>
+(function(){
+  function init(){
+    if(document.getElementById('fm-v46-rescue'))return;
+    var host=document.createElement('div');host.id='fm-v46-rescue';
+    host.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483640;font:14px system-ui,Arial,sans-serif;color:#132c40';
+    host.innerHTML='<button id="fm-rescue-toggle" style="background:#075a77;color:white;border:2px solid white;border-radius:12px;padding:12px;box-shadow:0 3px 14px #0005">☁ Cloud Transfer</button><div id="fm-rescue-panel" style="display:none;background:white;color:#132c40;border:1px solid #9ab3c4;border-radius:12px;padding:16px;width:min(370px,calc(100vw - 28px));max-height:70vh;overflow:auto;box-shadow:0 6px 24px #0005"><strong>V46 Cloud Transfer — connection check</strong><p id="fm-rescue-status">Checking transfer script...</p><p>Uploads and restores are disabled until the connection is verified.</p><button id="fm-rescue-retry" style="padding:9px">Retry loading script</button> <button id="fm-rescue-close" style="padding:9px">Close</button></div>';
+    document.body.appendChild(host);
+    var panel=document.getElementById('fm-rescue-panel'),status=document.getElementById('fm-rescue-status');
+    document.getElementById('fm-rescue-toggle').onclick=function(){panel.style.display=panel.style.display==='none'?'block':'none'};
+    document.getElementById('fm-rescue-close').onclick=function(){panel.style.display='none'};
+    function check(){
+      if(document.getElementById('fm-cloud-v46')){status.textContent='Transfer panel created. Use its controls only after reviewing the data preview.';host.style.display='none';return true}return false;
+    }
+    function load(){
+      if(check())return;
+      status.textContent='Loading cloud transfer script...';
+      var old=document.getElementById('fm-rescue-script');if(old)old.remove();
+      var s=document.createElement('script');s.id='fm-rescue-script';s.src='./cloud-sync-v46.js?v=panelrepair3';
+      s.onload=function(){if(!check())status.textContent='Script downloaded, but transfer panel did not appear. A runtime error may be preventing startup.'};
+      s.onerror=function(){status.textContent='Cloud script could not be downloaded. Check cloud-sync-v46.js is beside index.html.'};
+      document.body.appendChild(s);
+    }
+    document.getElementById('fm-rescue-retry').onclick=load;
+    window.addEventListener('error',function(e){if(!check())status.textContent='JavaScript error: '+String(e.message||'unknown').slice(0,220)});
+    window.addEventListener('unhandledrejection',function(e){if(!check())status.textContent='Startup error: '+String(e.reason?.message||e.reason||'unknown').slice(0,220)});
+    load();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body></html>`);w.document.close();return}
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-coach]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();coachAction(b).catch(err=>alert('Could not complete action: '+err.message))},true);
 document.addEventListener('change',async e=>{if(e.target.id!=='coachPreviewFile')return;try{const j=JSON.parse(await e.target.files[0].text());$('coachPreviewResult').textContent=`Backup preview: ${(j.clients||[]).length} clients, ${(j.programmes||[]).length} programmes, ${(j.records||[]).length} records, ${(j.coaching?.reviews||[]).length} coaching reviews. No data has been changed.`}catch{$('coachPreviewResult').textContent='Unable to read backup'}},true);
@@ -1249,6 +1311,36 @@ async function getPublishingToken(){if(publishToken)return publishToken;return n
 let fmBatchPublishing=false;
 async function publishClientFile(filename,html){if(!fmBatchPublishing&&!confirm('Publish to public GitHub Pages? Existing filename may identify the client. Programme exercise details remain public. Confirm client consent and check that no private information is included. This replaces the existing page.'))return false;const token=await getPublishingToken();if(!token)return false;const url='https://api.github.com/repos/mcewen180276-star/client-apps/contents/'+encodeURIComponent(filename);const headers={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','Content-Type':'application/json'};try{const r=await fetch(url,{headers});let sha;if(r.ok)sha=(await r.json()).sha;else if(r.status!==404)throw Error('GitHub lookup '+r.status);const bytes=new TextEncoder().encode(html);let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));const put=await fetch(url,{method:'PUT',headers,body:JSON.stringify({message:'Update client programme',content:btoa(binary),...(sha?{sha}:{})})});if(!put.ok)throw Error('GitHub upload '+put.status);if(!fmBatchPublishing)alert('GitHub accepted the update. Pages deployment may take a few minutes. Existing link unchanged.');return true;}catch(e){publishToken='';sessionStorage.removeItem('fm-publish-token-session');localStorage.removeItem('fm-publish-token-device');if(!fmBatchPublishing)alert('Publishing failed: '+e.message+'. Programme remains saved locally. Retry from Client Mini-App.');else throw e;return false;}}
 function openWorkoutInbox(){const d=document.createElement('dialog');d.style.maxWidth='90vw';d.innerHTML='<h2>Workout Inbox</h2><p>Import privately shared workout JSON files. Records remain in your local manager backup.</p><input type="file" accept=".json" multiple><div class="inboxList"></div><button>Close</button>';document.body.append(d);const list=d.querySelector('.inboxList');function refresh(){list.replaceChildren();for(const item of (db.clientWorkoutInbox||[]).slice().reverse()){const x=document.createElement('details');const h=document.createElement('summary');const c=db.clients.find(c=>'client-'+c.id===item.packageId);h.textContent=(c?.name||'Unknown client')+' — '+item.record.date;const pre=document.createElement('pre');pre.style.whiteSpace='pre-wrap';pre.textContent=JSON.stringify(item.record,null,2);x.append(h,pre);list.append(x);}}d.querySelector('input').onchange=async e=>{for(const f of e.target.files){try{const o=JSON.parse(await f.text());if(o.type!=='fitness-client-workout-v1'||!db.clients.some(c=>'client-'+c.id===o.packageId)||!Array.isArray(o.record?.items)||typeof o.record.date!=='string')throw Error('Invalid or unknown client workout');db.clientWorkoutInbox??=[];if(!db.clientWorkoutInbox.some(x=>x.packageId===o.packageId&&x.record.date===o.record.date))db.clientWorkoutInbox.push(o);}catch(err){alert(f.name+': '+err.message)}}await save();refresh()};d.querySelector('button').onclick=()=>{d.close();d.remove()};refresh();d.showModal();}
-</script><script>(function(){function run(){var d=document.createElement('div');d.id='v46-diagnostic';d.style.cssText='position:fixed;top:10px;right:10px;z-index:2147483646;background:#fff8d5;color:#17212b;border:2px solid #ad8128;border-radius:9px;padding:9px;font:13px Arial;max-width:260px;box-shadow:0 3px 10px #0005';d.textContent='V46 check: page loaded; checking cloud script…';document.body.appendChild(d);window.addEventListener('error',function(e){if(e.filename&&e.filename.indexOf('cloud-sync-v46')>=0)d.textContent='V46 check: script error — '+e.message});window.addEventListener('unhandledrejection',function(e){d.textContent='V46 check: error — '+String(e.reason).slice(0,140)});var s=document.querySelector('script[src*="cloud-sync-v46.js"]');if(s){s.addEventListener('load',function(){d.textContent=document.getElementById('fm-cloud-v46')?'V46 check: cloud panel created':'V46 check: script loaded, but panel missing'});s.addEventListener('error',function(){d.textContent='V46 check: cloud script failed to download'})}else d.textContent='V46 check: cloud script tag missing';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run()})();</script>
-<script src="cloud-sync-v46.js?v=diagnostic2" defer></script>
+</script>
+<script>
+(function(){
+  function init(){
+    if(document.getElementById('fm-v46-rescue'))return;
+    var host=document.createElement('div');host.id='fm-v46-rescue';
+    host.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483640;font:14px system-ui,Arial,sans-serif;color:#132c40';
+    host.innerHTML='<button id="fm-rescue-toggle" style="background:#075a77;color:white;border:2px solid white;border-radius:12px;padding:12px;box-shadow:0 3px 14px #0005">☁ Cloud Transfer</button><div id="fm-rescue-panel" style="display:none;background:white;color:#132c40;border:1px solid #9ab3c4;border-radius:12px;padding:16px;width:min(370px,calc(100vw - 28px));max-height:70vh;overflow:auto;box-shadow:0 6px 24px #0005"><strong>V46 Cloud Transfer — connection check</strong><p id="fm-rescue-status">Checking transfer script...</p><p>Uploads and restores are disabled until the connection is verified.</p><button id="fm-rescue-retry" style="padding:9px">Retry loading script</button> <button id="fm-rescue-close" style="padding:9px">Close</button></div>';
+    document.body.appendChild(host);
+    var panel=document.getElementById('fm-rescue-panel'),status=document.getElementById('fm-rescue-status');
+    document.getElementById('fm-rescue-toggle').onclick=function(){panel.style.display=panel.style.display==='none'?'block':'none'};
+    document.getElementById('fm-rescue-close').onclick=function(){panel.style.display='none'};
+    function check(){
+      if(document.getElementById('fm-cloud-v46')){status.textContent='Transfer panel created. Use its controls only after reviewing the data preview.';host.style.display='none';return true}return false;
+    }
+    function load(){
+      if(check())return;
+      status.textContent='Loading cloud transfer script...';
+      var old=document.getElementById('fm-rescue-script');if(old)old.remove();
+      var s=document.createElement('script');s.id='fm-rescue-script';s.src='./cloud-sync-v46.js?v=panelrepair3';
+      s.onload=function(){if(!check())status.textContent='Script downloaded, but transfer panel did not appear. A runtime error may be preventing startup.'};
+      s.onerror=function(){status.textContent='Cloud script could not be downloaded. Check cloud-sync-v46.js is beside index.html.'};
+      document.body.appendChild(s);
+    }
+    document.getElementById('fm-rescue-retry').onclick=load;
+    window.addEventListener('error',function(e){if(!check())status.textContent='JavaScript error: '+String(e.message||'unknown').slice(0,220)});
+    window.addEventListener('unhandledrejection',function(e){if(!check())status.textContent='Startup error: '+String(e.reason?.message||e.reason||'unknown').slice(0,220)});
+    load();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body></html>

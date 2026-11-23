@@ -77,6 +77,36 @@ $('jsonExport').onclick=()=>{if(!plan.length)return alert('Create or load a clas
 $('htmlExport').onclick=()=>{if(!plan.length)return alert('Create or load a class first.');const d=payload();let t=JSON.parse($('pilatesPlayer').textContent);t=t.replace('__CLASS_DATA__',JSON.stringify(d).replace(/</g,'\\u003c'));file('pilates-companion-'+slug(d.title)+'.html',t,'text/html;charset=utf-8');$('status').textContent='Client mini app HTML exported.'};
 refresh();render();
 })();
-</script><script>(function(){function run(){var d=document.createElement('div');d.id='v46-diagnostic';d.style.cssText='position:fixed;top:10px;right:10px;z-index:2147483646;background:#fff8d5;color:#17212b;border:2px solid #ad8128;border-radius:9px;padding:9px;font:13px Arial;max-width:260px;box-shadow:0 3px 10px #0005';d.textContent='V46 check: page loaded; checking cloud script…';document.body.appendChild(d);window.addEventListener('error',function(e){if(e.filename&&e.filename.indexOf('cloud-sync-v46')>=0)d.textContent='V46 check: script error — '+e.message});window.addEventListener('unhandledrejection',function(e){d.textContent='V46 check: error — '+String(e.reason).slice(0,140)});var s=document.querySelector('script[src*="cloud-sync-v46.js"]');if(s){s.addEventListener('load',function(){d.textContent=document.getElementById('fm-cloud-v46')?'V46 check: cloud panel created':'V46 check: script loaded, but panel missing'});s.addEventListener('error',function(){d.textContent='V46 check: cloud script failed to download'})}else d.textContent='V46 check: cloud script tag missing';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run()})();</script>
-<script src="cloud-sync-v46.js?v=diagnostic2" defer></script>
+</script>
+<script>
+(function(){
+  function init(){
+    if(document.getElementById('fm-v46-rescue'))return;
+    var host=document.createElement('div');host.id='fm-v46-rescue';
+    host.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483640;font:14px system-ui,Arial,sans-serif;color:#132c40';
+    host.innerHTML='<button id="fm-rescue-toggle" style="background:#075a77;color:white;border:2px solid white;border-radius:12px;padding:12px;box-shadow:0 3px 14px #0005">☁ Cloud Transfer</button><div id="fm-rescue-panel" style="display:none;background:white;color:#132c40;border:1px solid #9ab3c4;border-radius:12px;padding:16px;width:min(370px,calc(100vw - 28px));max-height:70vh;overflow:auto;box-shadow:0 6px 24px #0005"><strong>V46 Cloud Transfer — connection check</strong><p id="fm-rescue-status">Checking transfer script...</p><p>Uploads and restores are disabled until the connection is verified.</p><button id="fm-rescue-retry" style="padding:9px">Retry loading script</button> <button id="fm-rescue-close" style="padding:9px">Close</button></div>';
+    document.body.appendChild(host);
+    var panel=document.getElementById('fm-rescue-panel'),status=document.getElementById('fm-rescue-status');
+    document.getElementById('fm-rescue-toggle').onclick=function(){panel.style.display=panel.style.display==='none'?'block':'none'};
+    document.getElementById('fm-rescue-close').onclick=function(){panel.style.display='none'};
+    function check(){
+      if(document.getElementById('fm-cloud-v46')){status.textContent='Transfer panel created. Use its controls only after reviewing the data preview.';host.style.display='none';return true}return false;
+    }
+    function load(){
+      if(check())return;
+      status.textContent='Loading cloud transfer script...';
+      var old=document.getElementById('fm-rescue-script');if(old)old.remove();
+      var s=document.createElement('script');s.id='fm-rescue-script';s.src='./cloud-sync-v46.js?v=panelrepair3';
+      s.onload=function(){if(!check())status.textContent='Script downloaded, but transfer panel did not appear. A runtime error may be preventing startup.'};
+      s.onerror=function(){status.textContent='Cloud script could not be downloaded. Check cloud-sync-v46.js is beside index.html.'};
+      document.body.appendChild(s);
+    }
+    document.getElementById('fm-rescue-retry').onclick=load;
+    window.addEventListener('error',function(e){if(!check())status.textContent='JavaScript error: '+String(e.message||'unknown').slice(0,220)});
+    window.addEventListener('unhandledrejection',function(e){if(!check())status.textContent='Startup error: '+String(e.reason?.message||e.reason||'unknown').slice(0,220)});
+    load();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body></html>
