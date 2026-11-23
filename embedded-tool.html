@@ -598,38 +598,7 @@ function programmeHTML(p){return `<!doctype html><html><head><meta charset="utf-
 #choreo .ch-playlists{border-color:#cbdcf5}
 #choreo .ch-playlists h3{font-size:1.15rem}
 @media(max-width:640px){#choreo .ch-quick-switch{grid-template-columns:1fr 1fr}#choreo .ch-quick-switch button{grid-column:1/-1}#choreo #chPdfStage{height:56vh!important}}
-</style></head><body><h1>${safe(p.name)}</h1><p>Goal: ${safe(p.goal)}</p>${p.days.map(day=>`<section><h2>${safe(day.name)}</h2><ol>${day.exercises.map(x=>{const ex=all().find(a=>a.id===x.id);return `<li><b>${safe(ex?.name||'Unknown')}</b> — ${safe(x.sets)} sets × ${safe(x.reps)}, ${safe(x.rest)}s rest${x.warm?`, ${x.warm} warm-up set(s) of 16–20 light reps`:''}<p>${safe(ex?.desc||'')}</p>${ex?`<a href="${safe(demo(ex))}">Exercise demo search</a>`:''}</li>`}).join('')}</ol></section>`).join('')}<script>
-(function(){
-  function init(){
-    if(document.getElementById('fm-v46-rescue'))return;
-    var host=document.createElement('div');host.id='fm-v46-rescue';
-    host.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483640;font:14px system-ui,Arial,sans-serif;color:#132c40';
-    host.innerHTML='<button id="fm-rescue-toggle" style="background:#075a77;color:white;border:2px solid white;border-radius:12px;padding:12px;box-shadow:0 3px 14px #0005">☁ Cloud Transfer</button><div id="fm-rescue-panel" style="display:none;background:white;color:#132c40;border:1px solid #9ab3c4;border-radius:12px;padding:16px;width:min(370px,calc(100vw - 28px));max-height:70vh;overflow:auto;box-shadow:0 6px 24px #0005"><strong>V46 Cloud Transfer — connection check</strong><p id="fm-rescue-status">Checking transfer script...</p><p>Uploads and restores are disabled until the connection is verified.</p><button id="fm-rescue-retry" style="padding:9px">Retry loading script</button> <button id="fm-rescue-close" style="padding:9px">Close</button></div>';
-    document.body.appendChild(host);
-    var panel=document.getElementById('fm-rescue-panel'),status=document.getElementById('fm-rescue-status');
-    document.getElementById('fm-rescue-toggle').onclick=function(){panel.style.display=panel.style.display==='none'?'block':'none'};
-    document.getElementById('fm-rescue-close').onclick=function(){panel.style.display='none'};
-    function check(){
-      if(document.getElementById('fm-cloud-v46')){status.textContent='Transfer panel created. Use its controls only after reviewing the data preview.';host.style.display='none';return true}return false;
-    }
-    function load(){
-      if(check())return;
-      status.textContent='Loading cloud transfer script...';
-      var old=document.getElementById('fm-rescue-script');if(old)old.remove();
-      var s=document.createElement('script');s.id='fm-rescue-script';s.src='./cloud-sync-v46.js?v=panelrepair3';
-      s.onload=function(){if(!check())status.textContent='Script downloaded, but transfer panel did not appear. A runtime error may be preventing startup.'};
-      s.onerror=function(){status.textContent='Cloud script could not be downloaded. Check cloud-sync-v46.js is beside index.html.'};
-      document.body.appendChild(s);
-    }
-    document.getElementById('fm-rescue-retry').onclick=load;
-    window.addEventListener('error',function(e){if(!check())status.textContent='JavaScript error: '+String(e.message||'unknown').slice(0,220)});
-    window.addEventListener('unhandledrejection',function(e){if(!check())status.textContent='Startup error: '+String(e.reason?.message||e.reason||'unknown').slice(0,220)});
-    load();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script>
-</body></html>`}
+</style></head><body><h1>${safe(p.name)}</h1><p>Goal: ${safe(p.goal)}</p>${p.days.map(day=>`<section><h2>${safe(day.name)}</h2><ol>${day.exercises.map(x=>{const ex=all().find(a=>a.id===x.id);return `<li><b>${safe(ex?.name||'Unknown')}</b> — ${safe(x.sets)} sets × ${safe(x.reps)}, ${safe(x.rest)}s rest${x.warm?`, ${x.warm} warm-up set(s) of 16–20 light reps`:''}<p>${safe(ex?.desc||'')}</p>${ex?`<a href="${safe(demo(ex))}">Exercise demo search</a>`:''}</li>`}).join('')}</ol></section>`).join('')}</body></html>`}
 $('progSaved').onclick=e=>{const b=e.target.closest('button');if(!b)return;const id=Number(b.dataset.openProg||b.dataset.printProg||b.dataset.exportProg||b.dataset.deleteProg);const p=extra.programmes.find(x=>x.id===id);if(!p)return;if(b.dataset.deleteProg){if(confirm('Delete this programme?')){extra.programmes=extra.programmes.filter(x=>x.id!==id);extraSave();programmeRender()}return}if(b.dataset.openProg){draft=JSON.parse(JSON.stringify(p));dayIndex=0;$('progName').value=p.name;$('progGoal').value=p.goal;programmeClients();$('progClient').value=p.client||'';programmeRender();toast('Programme loaded as editable draft')}else if(b.dataset.exportProg)download(programmeHTML(p),'programme-'+id+'.html','text/html');else{const w=window.open('','_blank');if(w){w.document.write(programmeHTML(p));w.document.close();w.onload=()=>w.print()}else toast('Allow popups to print')}};
 let specialistItems=[],specialistTitle='',specialistDetails='';
 function specialistRender(){const items=specialistItems.map((x,i)=>`<li>${safe(x)}</li>`).join('');$('specialOutput').innerHTML=`<h3>${safe(specialistTitle)}</h3><p>${safe(specialistDetails)}</p><ol>${items}</ol>`}
@@ -650,38 +619,7 @@ $('specialPrint').onclick=()=>{if(!specialistItems.length)return toast('Generate
 #choreo .ch-playlists{border-color:#cbdcf5}
 #choreo .ch-playlists h3{font-size:1.15rem}
 @media(max-width:640px){#choreo .ch-quick-switch{grid-template-columns:1fr 1fr}#choreo .ch-quick-switch button{grid-column:1/-1}#choreo #chPdfStage{height:56vh!important}}
-</style></head><body><h1>${safe(specialistTitle)}</h1><p>${safe(specialistDetails)}</p><ol>${specialistItems.map(x=>`<li>${safe(x)}</li>`).join('')}</ol><script>
-(function(){
-  function init(){
-    if(document.getElementById('fm-v46-rescue'))return;
-    var host=document.createElement('div');host.id='fm-v46-rescue';
-    host.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483640;font:14px system-ui,Arial,sans-serif;color:#132c40';
-    host.innerHTML='<button id="fm-rescue-toggle" style="background:#075a77;color:white;border:2px solid white;border-radius:12px;padding:12px;box-shadow:0 3px 14px #0005">☁ Cloud Transfer</button><div id="fm-rescue-panel" style="display:none;background:white;color:#132c40;border:1px solid #9ab3c4;border-radius:12px;padding:16px;width:min(370px,calc(100vw - 28px));max-height:70vh;overflow:auto;box-shadow:0 6px 24px #0005"><strong>V46 Cloud Transfer — connection check</strong><p id="fm-rescue-status">Checking transfer script...</p><p>Uploads and restores are disabled until the connection is verified.</p><button id="fm-rescue-retry" style="padding:9px">Retry loading script</button> <button id="fm-rescue-close" style="padding:9px">Close</button></div>';
-    document.body.appendChild(host);
-    var panel=document.getElementById('fm-rescue-panel'),status=document.getElementById('fm-rescue-status');
-    document.getElementById('fm-rescue-toggle').onclick=function(){panel.style.display=panel.style.display==='none'?'block':'none'};
-    document.getElementById('fm-rescue-close').onclick=function(){panel.style.display='none'};
-    function check(){
-      if(document.getElementById('fm-cloud-v46')){status.textContent='Transfer panel created. Use its controls only after reviewing the data preview.';host.style.display='none';return true}return false;
-    }
-    function load(){
-      if(check())return;
-      status.textContent='Loading cloud transfer script...';
-      var old=document.getElementById('fm-rescue-script');if(old)old.remove();
-      var s=document.createElement('script');s.id='fm-rescue-script';s.src='./cloud-sync-v46.js?v=panelrepair3';
-      s.onload=function(){if(!check())status.textContent='Script downloaded, but transfer panel did not appear. A runtime error may be preventing startup.'};
-      s.onerror=function(){status.textContent='Cloud script could not be downloaded. Check cloud-sync-v46.js is beside index.html.'};
-      document.body.appendChild(s);
-    }
-    document.getElementById('fm-rescue-retry').onclick=load;
-    window.addEventListener('error',function(e){if(!check())status.textContent='JavaScript error: '+String(e.message||'unknown').slice(0,220)});
-    window.addEventListener('unhandledrejection',function(e){if(!check())status.textContent='Startup error: '+String(e.reason?.message||e.reason||'unknown').slice(0,220)});
-    load();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script>
-</body></html>`;const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();w.onload=()=>w.print()}else download(html,'specialist-plan.html','text/html')};
+</style></head><body><h1>${safe(specialistTitle)}</h1><p>${safe(specialistDetails)}</p><ol>${specialistItems.map(x=>`<li>${safe(x)}</li>`).join('')}</ol></body></html>`;const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();w.onload=()=>w.print()}else download(html,'specialist-plan.html','text/html')};
 let pdfUrl=null,pdfPage=1,pdfZoom=100,pdfFile=null;let chMusicUrls=[];
 function chKey(){return $('chProgramme').value+'-'+$('chRelease').value.trim()}
 function chNavigate(page){if(!pdfUrl)return toast('Select the PDF for this release first');pdfPage=Math.max(1,Math.floor(+page)||1);$('chGoPage').value=pdfPage;$('chViewer').src=pdfUrl+'#page='+pdfPage+'&zoom='+pdfZoom;$('chPdfInfo').textContent=(pdfFile?.name||'PDF')+' · page '+pdfPage+' · '+pdfZoom+'% (PDF navigation depends on browser support)'}
@@ -3637,35 +3575,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<script>
-(function(){
-  function init(){
-    if(document.getElementById('fm-v46-rescue'))return;
-    var host=document.createElement('div');host.id='fm-v46-rescue';
-    host.style.cssText='position:fixed;bottom:14px;right:14px;z-index:2147483640;font:14px system-ui,Arial,sans-serif;color:#132c40';
-    host.innerHTML='<button id="fm-rescue-toggle" style="background:#075a77;color:white;border:2px solid white;border-radius:12px;padding:12px;box-shadow:0 3px 14px #0005">☁ Cloud Transfer</button><div id="fm-rescue-panel" style="display:none;background:white;color:#132c40;border:1px solid #9ab3c4;border-radius:12px;padding:16px;width:min(370px,calc(100vw - 28px));max-height:70vh;overflow:auto;box-shadow:0 6px 24px #0005"><strong>V46 Cloud Transfer — connection check</strong><p id="fm-rescue-status">Checking transfer script...</p><p>Uploads and restores are disabled until the connection is verified.</p><button id="fm-rescue-retry" style="padding:9px">Retry loading script</button> <button id="fm-rescue-close" style="padding:9px">Close</button></div>';
-    document.body.appendChild(host);
-    var panel=document.getElementById('fm-rescue-panel'),status=document.getElementById('fm-rescue-status');
-    document.getElementById('fm-rescue-toggle').onclick=function(){panel.style.display=panel.style.display==='none'?'block':'none'};
-    document.getElementById('fm-rescue-close').onclick=function(){panel.style.display='none'};
-    function check(){
-      if(document.getElementById('fm-cloud-v46')){status.textContent='Transfer panel created. Use its controls only after reviewing the data preview.';host.style.display='none';return true}return false;
-    }
-    function load(){
-      if(check())return;
-      status.textContent='Loading cloud transfer script...';
-      var old=document.getElementById('fm-rescue-script');if(old)old.remove();
-      var s=document.createElement('script');s.id='fm-rescue-script';s.src='./cloud-sync-v46.js?v=panelrepair3';
-      s.onload=function(){if(!check())status.textContent='Script downloaded, but transfer panel did not appear. A runtime error may be preventing startup.'};
-      s.onerror=function(){status.textContent='Cloud script could not be downloaded. Check cloud-sync-v46.js is beside index.html.'};
-      document.body.appendChild(s);
-    }
-    document.getElementById('fm-rescue-retry').onclick=load;
-    window.addEventListener('error',function(e){if(!check())status.textContent='JavaScript error: '+String(e.message||'unknown').slice(0,220)});
-    window.addEventListener('unhandledrejection',function(e){if(!check())status.textContent='Startup error: '+String(e.reason?.message||e.reason||'unknown').slice(0,220)});
-    load();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script>
+<!-- V46 targeted transfer test: isolated external module -->
+<script src="cloud-sync-v46.js?v=targeted1" defer></script>
 </body></html>

@@ -1,3 +1,1 @@
-V46 CLOUD TRANSFER TEST — NOT FULL SYNC
-
-Use only on test-hub. Manual upload/restore of localStorage values only. No IndexedDB, media, PDFs, or true two-way sync. Do not overwrite original live app. Import your original app backup to Test Hub before uploading, and verify preview count.
+V46 targeted repair. Based on original V45. Only adds external script immediately before final closing body tag. TEST HUB ONLY. Do not upload real client data yet.
