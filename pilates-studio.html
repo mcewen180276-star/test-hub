@@ -77,4 +77,4 @@ $('jsonExport').onclick=()=>{if(!plan.length)return alert('Create or load a clas
 $('htmlExport').onclick=()=>{if(!plan.length)return alert('Create or load a class first.');const d=payload();let t=JSON.parse($('pilatesPlayer').textContent);t=t.replace('__CLASS_DATA__',JSON.stringify(d).replace(/</g,'\\u003c'));file('pilates-companion-'+slug(d.title)+'.html',t,'text/html;charset=utf-8');$('status').textContent='Client mini app HTML exported.'};
 refresh();render();
 })();
-</script><script src="v46-visible-control.js?v=4" defer></script></body></html>
+</script><script src="v46-visible-control.js?v=5" defer></script></body></html>
